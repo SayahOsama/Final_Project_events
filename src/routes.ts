@@ -342,7 +342,10 @@ export const getComments = async (req: IncomingMessage, res: ServerResponse) => 
         return;
     }
 
-    const comments = event.comments.slice(skip, skip + limit);
+    // Sort comments by date in descending order
+    const sortedComments = event.comments.sort((a, b) => b.date - a.date);
+
+    const comments = sortedComments.slice(skip, skip + limit);
 
     res.statusCode = 201;
     res.end(JSON.stringify(

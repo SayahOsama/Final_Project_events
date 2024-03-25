@@ -2,6 +2,7 @@ import { createServer, IncomingMessage, ServerResponse } from "http";
 import * as mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { createComment, createEvent, getAvailableEvent, getComments, getCommentsNum, getDate, getEvent, getEvents, getMinimumTicketPrice, getTicketsNum, mainRoute, updateEvent, updateTicket } from "./routes.js";
+import { consumeMessages } from './counsume-messages.js';
 
 // For environment-variables
 dotenv.config();
@@ -10,6 +11,9 @@ const port = process.env.PORT;
 // Connect to mongoDB
 const dbURI = `mongodb+srv://${process.env.DBUSER}:${process.env.DBPASS}@pws.jqme9mr.mongodb.net/Final_Project`;
 await mongoose.connect(dbURI);
+
+// start consuming messages
+consumeMessages();
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 
