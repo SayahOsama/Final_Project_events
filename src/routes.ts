@@ -444,13 +444,17 @@ export const getAvailableEvent = async (req: IncomingMessage, res: ServerRespons
   }
 
   try {
+    const currentTime = new Date(); // Get current time
     const events = await Event.aggregate([
       {
-          $match: {
-              'tickets.quantity': { $gt: 0 } // Filter events with at least one ticket with available quantity
-          }
-      }
-      ]).skip(skip).limit(limit);
+        $match: {
+          'tickets.quantity': { $gt: 0 }, // Filter events with at least one ticket with available quantity
+          'start_date': { $gt: currentTime } // Filter events with start_date greater than current time
+        }
+      },
+      { $skip: skip }, // Skip records for pagination
+      { $limit: limit } // Limit records for pagination
+     ]);
       res.statusCode = 200;
       res.end(
         JSON.stringify(
