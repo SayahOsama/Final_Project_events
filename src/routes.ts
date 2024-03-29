@@ -73,7 +73,8 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
         const closestEvent = await Event.aggregate([
             {
                 $match: {
-                    _id: { $in: objectIdList } // Filter events by the provided IDs
+                    _id: { $in: objectIdList }, // Filter events by the provided IDs
+                    start_date: { $gt: new Date() } // Add condition for start_date greater than current time
                 }
             },
             {
