@@ -32,7 +32,7 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   }
 
   if (req.url.match(/\/api\/event\/date/)) {
-    if(req.method === "GET"){
+    if(req.method === "POST"){
       getDate(req,res);
       return;
     }
