@@ -351,7 +351,7 @@ export const getComments = async (req: IncomingMessage, res: ServerResponse) => 
       { $replaceRoot: { newRoot: "$comments" } } // Replace the root document with comments array
     ]);
 
-    if (!comments || !comments.length) {
+    if (!comments) {
       res.statusCode = 404;
       res.end("Event not found or no comments available");
       return;
