@@ -342,17 +342,20 @@ export const getComments = async (req: IncomingMessage, res: ServerResponse) => 
   }
 
   try{
-    const event = await Event.findById(id);
-    if (!event) {
-        res.statusCode = 404;
-        res.end("Event not found");
-        return;
+    const comments = await Event.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } }, // Filter by event ID
+      { $unwind: "$comments" }, // Deconstruct comments array
+      { $sort: { "comments.date": -1 } }, // Sort comments by date in descending order
+      { $skip: skip }, // Skip comments based on skip parameter
+      { $limit: limit }, // Limit the number of comments based on limit parameter
+      { $replaceRoot: { newRoot: "$comments" } } // Replace the root document with comments array
+    ]);
+
+    if (!comments || !comments.length) {
+      res.statusCode = 404;
+      res.end("Event not found or no comments available");
+      return;
     }
-
-    // Sort comments by date in descending order
-    const sortedComments = event.comments.sort((a, b) => b.date - a.date);
-
-    const comments = sortedComments.slice(skip, skip + limit);
 
     res.statusCode = 201;
     res.end(JSON.stringify(
