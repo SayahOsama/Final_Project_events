@@ -357,7 +357,7 @@ export const getComments = async (req: IncomingMessage, res: ServerResponse) => 
       return;
     }
 
-    res.statusCode = 201;
+    res.statusCode = 200;
     res.end(JSON.stringify(
       comments
     ));
