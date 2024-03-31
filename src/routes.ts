@@ -111,7 +111,7 @@ export const getEvent = async (req: IncomingMessage, res: ServerResponse) => {
 
   try {
       // Query all events from the database
-      const event = await Event.findById(eventId);
+      const event = await Event.findById(eventId).select('-comments');
       res.statusCode = 200;
       res.end(
         JSON.stringify(
