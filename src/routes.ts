@@ -259,14 +259,14 @@ export const updateTicket = async (req: IncomingMessage, res: ServerResponse) =>
               return;
           }
 
-          if(event.tickets[ticketIndex].quantity + amount < 0){
+          if(parseInt(event.tickets[ticketIndex].quantity) + parseInt(amount) < 0){
             res.statusCode = 400;
             res.end("There isn't enough tickets");
             return;
           }
           
           // Update the ticket amount
-          event.tickets[ticketIndex].quantity += amount;
+          event.tickets[ticketIndex].quantity = parseInt(amount) + parseInt(event.tickets[ticketIndex].quantity);
 
           // Save the updated event
           await event.save();
