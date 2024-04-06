@@ -18,7 +18,7 @@ consumeMessages();
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 
     // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://final-project-gateway.onrender.com');
+  res.setHeader('Access-Control-Allow-Origin', 'https://final-project-gateway.onrender.com','https://osama-sayah.github.io');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
