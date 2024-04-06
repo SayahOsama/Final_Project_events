@@ -1,113 +1,48 @@
-import { createServer, IncomingMessage, ServerResponse } from "http";
-import * as mongoose from "mongoose";
-import * as dotenv from "dotenv";
-import { createComment, createEvent, getAvailableEvent, getComments, getCommentsNum, getDate, getEvent, getEvents, getMinimumTicketPrice, getTicketsNum, mainRoute, updateEvent, updateTicket } from "./routes.js";
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { createComment, createEvent, getAvailableEvent, getComments, getCommentsNum, getDate, getEvent, getEvents, getMinimumTicketPrice, getTicketsNum, mainRoute, updateEvent, updateTicket } from './routes.js';
 import { consumeMessages } from './counsume-messages.js';
-import cors from "cors";
 
-// For environment-variables
 dotenv.config();
+const app = express();
 const port = process.env.PORT;
 
-// Connect to mongoDB
+// Connect to MongoDB
 const dbURI = `mongodb+srv://${process.env.DBUSER}:${process.env.DBPASS}@pws.jqme9mr.mongodb.net/Final_Project`;
 await mongoose.connect(dbURI);
 
-// start consuming messages
+// Start consuming messages
 consumeMessages();
 
-const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+// CORS middleware
+app.use(cors({
+  origin: ['https://osama-sayah.github.io','https://final-project-gateway.onrender.com'],
+  credentials: true
+}));
 
-  cors({
-    origin: "https://final-project-gateway.onrender.com"
-  })(req, res, () => {});
 
-  if (req.url.match(/\/api\/event\/tickets\/price\/\w+/)) {
-    if(req.method === "GET"){
-      getMinimumTicketPrice(req,res);
-      return;
-    }
-  }
+// Routes
+app.get('/api/event/tickets/price/:eventId', getMinimumTicketPrice);
+app.get('/api/event/tickets/amount/:eventId', getTicketsNum);
+app.post('/api/event/date', getDate);
+app.put('/api/event/tickets/:eventId', updateTicket);
+app.get('/api/event/comments/amount/:eventId', getCommentsNum);
+app.get('/api/event/comments/:eventId', getComments);
+app.post('/api/event/comments/:eventId', createComment);
+app.get('/api/event/available', getAvailableEvent);
+app.get('/api/event/:eventId', getEvent);
+app.put('/api/event/:eventId', updateEvent);
+app.get('/api/event', getEvents);
+app.post('/api/event', createEvent);
+app.get('/', mainRoute);
 
-  if (req.url.match(/\/api\/event\/tickets\/amount\/\w+/)) {
-    if(req.method === "GET"){
-      getTicketsNum(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event\/date/)) {
-    if(req.method === "POST"){
-      getDate(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event\/tickets\/\w+/)) {
-    if(req.method === "PUT"){
-      updateTicket(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event\/comments\/amount\/\w+/)) {
-    if(req.method === "GET"){
-      getCommentsNum(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event\/comments\/[\w=&?]+/)) {
-    if(req.method === "GET"){
-      getComments(req,res);
-      return;
-    }
-
-    if(req.method === "POST"){
-      createComment(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event\/available[\w=&?]*/)) {
-    if(req.method === "GET"){
-      getAvailableEvent(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event\/\w+/)) {
-    if(req.method === "GET"){
-      getEvent(req,res);
-      return;
-    }
-    if(req.method === "PUT"){
-      updateEvent(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\/api\/event[\w=&?]*/)) {
-    if(req.method === "GET"){
-      getEvents(req,res);
-      return;
-    }
-    if(req.method === "POST"){
-      createEvent(req,res);
-      return;
-    }
-  }
-
-  if (req.url.match(/\//)) {
-    if(req.method === "GET"){
-      mainRoute(req,res);
-      return;
-    }
-  }
-
-  res.statusCode = 404;
-  res.end("route does not exist");
+// Handle 404 - Not Found
+app.use((req, res) => {
+  res.status(404).send('Route does not exist');
 });
 
-server.listen(port);
-console.log(`Server running! port ${port}`);
+app.listen(port, () => {
+  console.log(`Server running! port ${port}`);
+});
