@@ -73,8 +73,7 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
         const closestEvent = await Event.aggregate([
             {
                 $match: {
-                    _id: { $in: objectIdList }, // Filter events by the provided IDs
-                    start_date: { $gt: new Date() } // Add condition for start_date greater than current time
+                    _id: { $in: objectIdList } // Filter events by the provided IDs
                 }
             },
             {
@@ -82,7 +81,12 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
             },
             {
                 $limit: 1 // Limit the result to the first event (closest start date)
-            }
+            },
+            {
+              $project: {
+                comments: 0 // Exclude the comments field from the results
+              }
+          }
         ]);
 
         // Check if any event found
@@ -161,6 +165,7 @@ export const getMinimumTicketPrice = async (req: IncomingMessage, res: ServerRes
         {
             $project: {
                 _id: 0, // Exclude the default _id field from the output
+                comments: 0,
                 minPrice: 1 // Include the minimum price in the output
             }
         }
@@ -244,7 +249,7 @@ export const updateTicket = async (req: IncomingMessage, res: ServerResponse) =>
           const ticketType = ticket.ticketType;
           const amount = ticket.amount;
 
-          const event = await Event.findById(id);
+          const event = await Event.findById(id).select('-comments');
           if (!event) {
               res.statusCode = 404;
               res.end("Event not found");
@@ -254,17 +259,15 @@ export const updateTicket = async (req: IncomingMessage, res: ServerResponse) =>
           // Find the index of the ticket with the given type
           const ticketIndex = event.tickets.findIndex(ticket => ticket.name === ticketType);
           if (ticketIndex === -1) {
-              res.statusCode = 404;
-              res.end("Ticket not found");
-              return;
+            res.statusCode = 404;
+            res.end("Ticket not found");
+            return;
           }
-
           if(parseInt(event.tickets[ticketIndex].quantity) + parseInt(amount) < 0){
             res.statusCode = 400;
             res.end("There isn't enough tickets");
             return;
           }
-          
           // Update the ticket amount
           event.tickets[ticketIndex].quantity = parseInt(amount) + parseInt(event.tickets[ticketIndex].quantity);
 
@@ -406,18 +409,16 @@ export const createComment = (req: IncomingMessage, res: ServerResponse) => {
         content: content
       };
       
-      const event = await Event.findById(id);
-      if (!event) {
-          res.statusCode = 404;
-          res.end("Event not found");
-          return;
+      const result = await Event.updateOne(
+        { _id: id },
+        { $push: { comments: newComment } }
+      );
+
+      if (result.modifiedCount === 0) {
+        res.statusCode = 404;
+        res.end("Event not found");
+        return;
       }
-
-      // Add the new comment to the event's comments array
-      event.comments.push(newComment);
-
-      // Save the updated event document
-      await event.save();
 
       res.statusCode = 201;
       res.end("Comment created successfully");
@@ -448,8 +449,8 @@ export const getAvailableEvent = async (req: IncomingMessage, res: ServerRespons
   }
 
   try {
-    const currentTime = new Date(); // Get current time
-    const events = await Event.aggregate([
+     const currentTime = new Date(); // Get current time
+     const events = await Event.aggregate([
       {
         $match: {
           'tickets.quantity': { $gt: 0 }, // Filter events with at least one ticket with available quantity
@@ -457,7 +458,12 @@ export const getAvailableEvent = async (req: IncomingMessage, res: ServerRespons
         }
       },
       { $skip: skip }, // Skip records for pagination
-      { $limit: limit } // Limit records for pagination
+      { $limit: limit }, // Limit records for pagination
+      {
+        $project: {
+          'comments': 0 // Exclude the comments field
+        }
+      }
      ]);
       res.statusCode = 200;
       res.end(
@@ -608,7 +614,7 @@ export const updateEvent = async (req: IncomingMessage, res: ServerResponse) => 
 
     let eventToUpdate;
     try{
-      eventToUpdate = await Event.findById(id);
+      eventToUpdate = await Event.findById(id).select('-comments');
     }catch(error){}
 
     if(!eventToUpdate){
