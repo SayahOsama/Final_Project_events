@@ -18,10 +18,10 @@ consumeMessages();
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
+  // res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
+  // res.setHeader('Access-Control-Allow-Credentials', 'true');
   
   if (req.url.match(/\/api\/event\/tickets\/price\/\w+/)) {
     if(req.method === "GET"){
