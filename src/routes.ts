@@ -68,12 +68,13 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
        
         // Convert event IDs to MongoDB ObjectIds
         const objectIdList = eventIDs.map(id => new mongoose.Types.ObjectId(id));
-
+        const currentDate = new Date();
         // Aggregation pipeline to find the event with the closest start date
         const closestEvent = await Event.aggregate([
             {
                 $match: {
-                    _id: { $in: objectIdList } // Filter events by the provided IDs
+                    _id: { $in: objectIdList }, // Filter events by the provided IDs
+                    start_date: { $gt: currentDate } // Filter events with start_date greater than current date
                 }
             },
             {
@@ -81,7 +82,12 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
             },
             {
                 $limit: 1 // Limit the result to the first event (closest start date)
-            }
+            },
+            {
+              $project: {
+                comments: 0 // Exclude the comments field from the results
+              }
+          }
         ]);
 
         // Check if any event found
@@ -110,7 +116,7 @@ export const getEvent = async (req: IncomingMessage, res: ServerResponse) => {
 
   try {
       // Query all events from the database
-      const event = await Event.findById(eventId);
+      const event = await Event.findById(eventId).select('-comments');
       res.statusCode = 200;
       res.end(
         JSON.stringify(
@@ -243,7 +249,7 @@ export const updateTicket = async (req: IncomingMessage, res: ServerResponse) =>
           const ticketType = ticket.ticketType;
           const amount = ticket.amount;
 
-          const event = await Event.findById(id);
+          const event = await Event.findById(id).select('-comments');
           if (!event) {
               res.statusCode = 404;
               res.end("Event not found");
@@ -253,13 +259,17 @@ export const updateTicket = async (req: IncomingMessage, res: ServerResponse) =>
           // Find the index of the ticket with the given type
           const ticketIndex = event.tickets.findIndex(ticket => ticket.name === ticketType);
           if (ticketIndex === -1) {
-              res.statusCode = 404;
-              res.end("Ticket not found");
-              return;
+            res.statusCode = 404;
+            res.end("Ticket not found");
+            return;
           }
-
+          if(parseInt(event.tickets[ticketIndex].quantity) + parseInt(amount) < 0){
+            res.statusCode = 400;
+            res.end("There isn't enough tickets");
+            return;
+          }
           // Update the ticket amount
-          event.tickets[ticketIndex].quantity += amount;
+          event.tickets[ticketIndex].quantity = parseInt(amount) + parseInt(event.tickets[ticketIndex].quantity);
 
           // Save the updated event
           await event.save();
@@ -335,19 +345,22 @@ export const getComments = async (req: IncomingMessage, res: ServerResponse) => 
   }
 
   try{
-    const event = await Event.findById(id);
-    if (!event) {
-        res.statusCode = 404;
-        res.end("Event not found");
-        return;
+    const comments = await Event.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } }, // Filter by event ID
+      { $unwind: "$comments" }, // Deconstruct comments array
+      { $sort: { "comments.date": -1 } }, // Sort comments by date in descending order
+      { $skip: skip }, // Skip comments based on skip parameter
+      { $limit: limit }, // Limit the number of comments based on limit parameter
+      { $replaceRoot: { newRoot: "$comments" } } // Replace the root document with comments array
+    ]);
+
+    if (!comments) {
+      res.statusCode = 404;
+      res.end("Event not found or no comments available");
+      return;
     }
 
-    // Sort comments by date in descending order
-    const sortedComments = event.comments.sort((a, b) => b.date - a.date);
-
-    const comments = sortedComments.slice(skip, skip + limit);
-
-    res.statusCode = 201;
+    res.statusCode = 200;
     res.end(JSON.stringify(
       comments
     ));
@@ -396,18 +409,16 @@ export const createComment = (req: IncomingMessage, res: ServerResponse) => {
         content: content
       };
       
-      const event = await Event.findById(id);
-      if (!event) {
-          res.statusCode = 404;
-          res.end("Event not found");
-          return;
+      const result = await Event.updateOne(
+        { _id: id },
+        { $push: { comments: newComment } }
+      );
+
+      if (result.modifiedCount === 0) {
+        res.statusCode = 404;
+        res.end("Event not found");
+        return;
       }
-
-      // Add the new comment to the event's comments array
-      event.comments.push(newComment);
-
-      // Save the updated event document
-      await event.save();
 
       res.statusCode = 201;
       res.end("Comment created successfully");
@@ -438,13 +449,22 @@ export const getAvailableEvent = async (req: IncomingMessage, res: ServerRespons
   }
 
   try {
-    const events = await Event.aggregate([
+     const currentTime = new Date(); // Get current time
+     const events = await Event.aggregate([
       {
-          $match: {
-              'tickets.quantity': { $gt: 0 } // Filter events with at least one ticket with available quantity
-          }
+        $match: {
+          'tickets.quantity': { $gt: 0 }, // Filter events with at least one ticket with available quantity
+          'start_date': { $gt: currentTime } // Filter events with start_date greater than current time
+        }
+      },
+      { $skip: skip }, // Skip records for pagination
+      { $limit: limit }, // Limit records for pagination
+      {
+        $project: {
+          'comments': 0 // Exclude the comments field
+        }
       }
-      ]).skip(skip).limit(limit);
+     ]);
       res.statusCode = 200;
       res.end(
         JSON.stringify(
@@ -478,7 +498,7 @@ export const getEvents = async (req: IncomingMessage, res: ServerResponse) => {
 
   try {
       // Query all events from the database
-      const events = await Event.find().skip(skip).limit(limit);
+      const events = await Event.find().select('-comments').skip(skip).limit(limit);
       res.statusCode = 200;
       res.end(
         JSON.stringify(
@@ -594,7 +614,7 @@ export const updateEvent = async (req: IncomingMessage, res: ServerResponse) => 
 
     let eventToUpdate;
     try{
-      eventToUpdate = await Event.findById(id);
+      eventToUpdate = await Event.findById(id).select('-comments');
     }catch(error){}
 
     if(!eventToUpdate){
@@ -720,7 +740,7 @@ export const createEvent = (req: IncomingMessage, res: ServerResponse) => {
           image: image,
         });
       }else{
-        newEvent = {
+        newEvent = new Event({
           title: title,
           category: category,
           description: description,
@@ -729,7 +749,7 @@ export const createEvent = (req: IncomingMessage, res: ServerResponse) => {
           end_date: end_date,
           location: location, 
           tickets: tickets,
-        };
+        });
       }
       await newEvent.save(newEvent);
       res.statusCode = 201;

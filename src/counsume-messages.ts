@@ -21,7 +21,7 @@ export const consumeMessages = async () => {
       const order = JSON.parse(msg.content.toString());
       let eventToUpdate;
       try{
-        eventToUpdate = await Event.findById(order.eventID);
+        eventToUpdate = await Event.findById(order.eventID).select('-comments');
       }catch(error){
         return;
       }

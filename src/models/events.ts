@@ -3,6 +3,9 @@ import * as mongoose from "mongoose";
 const ticketSchema = new mongoose.Schema({
     name: { type: String, required: true },
     quantity: { type: Number, required: true, min: 0 },
+    initial_quantity: { type: Number, required: true, min: 0, default: function() {
+        return this.quantity; // Set initial_quantity to the value of quantity
+    }},
     price: { type: Number, required: true, min: 0 }
 },{_id: false});
 

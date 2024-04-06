@@ -3,6 +3,7 @@ import * as mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { createComment, createEvent, getAvailableEvent, getComments, getCommentsNum, getDate, getEvent, getEvents, getMinimumTicketPrice, getTicketsNum, mainRoute, updateEvent, updateTicket } from "./routes.js";
 import { consumeMessages } from './counsume-messages.js';
+import cors from "cors";
 
 // For environment-variables
 dotenv.config();
@@ -16,6 +17,10 @@ await mongoose.connect(dbURI);
 consumeMessages();
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+
+  cors({
+    origin: "https://final-project-gateway.onrender.com"
+  })(req, res, () => {});
 
   if (req.url.match(/\/api\/event\/tickets\/price\/\w+/)) {
     if(req.method === "GET"){
@@ -32,7 +37,7 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   }
 
   if (req.url.match(/\/api\/event\/date/)) {
-    if(req.method === "GET"){
+    if(req.method === "POST"){
       getDate(req,res);
       return;
     }
