@@ -43,7 +43,7 @@ export const mainRoute = (req: IncomingMessage, res: ServerResponse) => {
   </ul>`);
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.end();
@@ -53,7 +53,7 @@ export const mainRoute = (req: IncomingMessage, res: ServerResponse) => {
 export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   let body = "";
@@ -122,7 +122,7 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
 export const getEvent = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   const eventId = req.url.split("/")[3];
@@ -149,7 +149,7 @@ export const getEvent = async (req: IncomingMessage, res: ServerResponse) => {
 export const getMinimumTicketPrice = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   const eventId = req.url.split("/")[5];
@@ -210,7 +210,7 @@ export const getMinimumTicketPrice = async (req: IncomingMessage, res: ServerRes
 export const getTicketsNum = async (req: IncomingMessage, res: ServerResponse) => {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     const eventId = req.url.split("/")[5];
@@ -251,7 +251,7 @@ export const getTicketsNum = async (req: IncomingMessage, res: ServerResponse) =
 export const updateTicket = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
  
@@ -314,7 +314,7 @@ export const updateTicket = async (req: IncomingMessage, res: ServerResponse) =>
 export const getCommentsNum = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -359,7 +359,7 @@ export const getCommentsNum = async (req: IncomingMessage, res: ServerResponse) 
 export const getComments = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -413,7 +413,7 @@ export const getComments = async (req: IncomingMessage, res: ServerResponse) => 
 export const createComment = (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -477,7 +477,7 @@ export const createComment = (req: IncomingMessage, res: ServerResponse) => {
 export const getAvailableEvent = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -530,7 +530,7 @@ export const getAvailableEvent = async (req: IncomingMessage, res: ServerRespons
 export const getEvents = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -571,7 +571,7 @@ export const getEvents = async (req: IncomingMessage, res: ServerResponse) => {
 export const updateEvent = async (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -736,7 +736,7 @@ export const updateEvent = async (req: IncomingMessage, res: ServerResponse) => 
 export const createEvent = (req: IncomingMessage, res: ServerResponse) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, origin, accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
