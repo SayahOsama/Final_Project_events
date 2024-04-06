@@ -165,7 +165,6 @@ export const getMinimumTicketPrice = async (req: IncomingMessage, res: ServerRes
         {
             $project: {
                 _id: 0, // Exclude the default _id field from the output
-                comments: 0,
                 minPrice: 1 // Include the minimum price in the output
             }
         }
