@@ -68,12 +68,13 @@ export const getDate = async (req: IncomingMessage, res: ServerResponse) => {
        
         // Convert event IDs to MongoDB ObjectIds
         const objectIdList = eventIDs.map(id => new mongoose.Types.ObjectId(id));
-
+        const currentDate = new Date();
         // Aggregation pipeline to find the event with the closest start date
         const closestEvent = await Event.aggregate([
             {
                 $match: {
-                    _id: { $in: objectIdList } // Filter events by the provided IDs
+                    _id: { $in: objectIdList }, // Filter events by the provided IDs
+                    start_date: { $gt: currentDate } // Filter events with start_date greater than current date
                 }
             },
             {
