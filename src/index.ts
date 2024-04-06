@@ -3,7 +3,6 @@ import * as mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { createComment, createEvent, getAvailableEvent, getComments, getCommentsNum, getDate, getEvent, getEvents, getMinimumTicketPrice, getTicketsNum, mainRoute, updateEvent, updateTicket } from "./routes.js";
 import { consumeMessages } from './counsume-messages.js';
-import cors from "cors";
 
 // For environment-variables
 dotenv.config();
@@ -18,9 +17,11 @@ consumeMessages();
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 
-  cors({
-    origin: "https://final-project-gateway.onrender.com"
-  })(req, res, () => {});
+    // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', 'https://final-project-gateway.onrender.com');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.url.match(/\/api\/event\/tickets\/price\/\w+/)) {
     if(req.method === "GET"){
