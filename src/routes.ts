@@ -734,7 +734,7 @@ export const createEvent = (req: IncomingMessage, res: ServerResponse) => {
           image: image,
         });
       }else{
-        newEvent = {
+        newEvent = new Event({
           title: title,
           category: category,
           description: description,
@@ -743,7 +743,7 @@ export const createEvent = (req: IncomingMessage, res: ServerResponse) => {
           end_date: end_date,
           location: location, 
           tickets: tickets,
-        };
+        });
       }
       await newEvent.save(newEvent);
       res.statusCode = 201;
