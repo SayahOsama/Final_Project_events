@@ -18,7 +18,7 @@ consumeMessages();
 
 // CORS middleware
 app.use(cors({
-  origin: ['https://SayahOsama.github.io','https://final-project-gateway.onrender.com', 'https://SayahOsama.github.io/Final_Project_App']
+  origin: ['https://github.com/SayahOsama','https://final-project-gateway.onrender.com', 'https://github.com/SayahOsama/Final_Project_App']
 }));
 
 
