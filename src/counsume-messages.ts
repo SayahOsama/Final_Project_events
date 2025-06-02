@@ -5,7 +5,7 @@ export const consumeMessages = async () => {
   try {
     // connect to RabbitMQ
     const conn = await amqp.connect(
-      `amqps://mqmsniij:${process.env.AMQPPASS}@cow.rmq2.cloudamqp.com/mqmsniij`
+      `amqps://fptcapra:${process.env.AMQPPASS}@seal.lmq.cloudamqp.com/fptcapra`
     );
     const channel = await conn.createChannel();
 
